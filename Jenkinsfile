@@ -1,32 +1,25 @@
 pipeline {
     agent any
-
     stages {
         stage('Checkout') {
             steps {
+                // Verifique o código do repositório
                 checkout scm
             }
         }
-        
-        stage('Linting') {
+        stage('Lint e Testes') {
             steps {
-                sh 'pip install flake8'
-                sh 'flake8 main.py calculadora_estatistica.py calculadora_mediana.py'
-            }
-        }
-
-        stage('Unit Tests') {
-            steps {
-                sh 'pip install -r requirements.txt'  // Instale as dependências de teste, se necessário
-                sh 'python -m unittest discover -s tests'
+                // Execute o script para lint
+                bat 'flake8 main.py calculadora_estatistica.py calculadora_mediana.py'
+                // Execute os testes
+                bat 'python -m unittest discover -s tests'
             }
         }
     }
-
     post {
         always {
-            archiveArtifacts artifacts: '**/nosetests.xml', allowEmptyArchive: true
-            junit '**/nosetests.xml'
+            // Publique resultados dos testes JUnit
+            step([$class: 'JUnitResultArchiver', testResults: 'test-reports/**/*.xml'])
         }
     }
 }
