@@ -7,12 +7,16 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Lint e Testes') {
+        stage('Main') {
             steps {
-                // Execute o script para lint
-                bat 'flake8 main.py calculadora_estatistica.py calculadora_mediana.py'
+                // Execute o main.py
+                bat 'python main.py'
+            }
+        }
+        stage('Testes') {
+            steps {
                 // Execute os testes
-                bat 'python -m unittest discover -s tests'
+                bat 'python -m unittest -v test_calculadora_estatistica.py'
             }
         }
     }

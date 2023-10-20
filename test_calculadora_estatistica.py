@@ -1,13 +1,10 @@
-import os
-import sys
 import unittest
-
-parent_directory = os.path.dirname(os.path.abspath(__file__))
-project_directory = os.path.dirname(parent_directory)
-
-sys.path.append(project_directory)
-
 from calculadora_estatistica import CalculadoraEstatistica
+
+class CustomTextTestResult(unittest.TextTestResult):
+    def addSuccess(self, test):
+        super(CustomTextTestResult, self).addSuccess(test)
+        self.stream.writeln(f'Success: {test.id()}')
 
 class TestCalculadoraEstatistica(unittest.TestCase):
     def test_media_lista_vazia(self):
@@ -26,4 +23,5 @@ class TestCalculadoraEstatistica(unittest.TestCase):
         self.assertEqual(resultado, 4.0, "A média de números mistos deve ser 4.")
 
 if __name__ == '__main__':
-    unittest.main()
+    runner = unittest.TextTestRunner(resultclass=CustomTextTestResult)
+    unittest.main(testRunner=runner)
